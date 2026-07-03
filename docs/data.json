@@ -1,4 +1,34 @@
 {
-  "ok": false,
-  "error": "数据尚未更新，请等待 GitHub Actions 首次运行（约 1-2 分钟）。"
+  "hk7709": {
+    "symbol": "7709.HK",
+    "price": 118.7,
+    "prevClose": 109.5999984741211,
+    "changePct": 8.3,
+    "marketTime": 1783059703,
+    "marketTimeStr": "2026-07-03 14:21:43",
+    "currency": "HKD"
+  },
+  "skHynix": {
+    "symbol": "000660.KS",
+    "price": 2430000.0,
+    "prevClose": 2187000.0,
+    "changePct": 11.11,
+    "marketTime": 1783059403,
+    "marketTimeStr": "2026-07-03 14:16:43",
+    "currency": "KRW"
+  },
+  "nav": {
+    "hkdNav": 93.6164,
+    "usdNav": 11.9344,
+    "hkdClose": 109.6,
+    "date": "2026-07-02",
+    "dateTc": "2026年07月02日"
+  },
+  "estimatedNav": {
+    "hkd": 114.42,
+    "usd": 14.5865
+  },
+  "premiumPct": 3.74,
+  "lastClosePremiumPct": 17.07,
+  "lastUpdated": "2026-07-03 14:36:45"
 }
