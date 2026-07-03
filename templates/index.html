@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7709.HK / SK 海力士 实时溢价</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", sans-serif; }
+        .up { color: #ef4444; }
+        .down { color: #22c55e; }
+        .card { background: white; border-radius: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen p-4 md:p-8">
+    <div class="max-w-3xl mx-auto">
+        <header class="mb-8 text-center">
+            <h1 class="text-2xl md:text-3xl font-bold mb-2">7709.HK 实时溢价查询</h1>
+            <p class="text-slate-500 text-sm">南方东英 SK 海力士每日杠杆(2x)产品 vs SK 海力士(000660.KS)</p>
+        </header>
+
+        <div id="status" class="text-center text-sm text-slate-400 mb-4">正在加载数据…</div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <!-- 7709.HK -->
+            <div class="card p-5">
+                <div class="flex justify-between items-start mb-2">
+                    <h2 class="font-semibold text-slate-600">7709.HK 实时价格</h2>
+                    <span class="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded">HKEX</span>
+                </div>
+                <div class="text-3xl font-bold" id="hk-price">--</div>
+                <div class="text-sm mt-1" id="hk-change">--</div>
+                <div class="text-xs text-slate-400 mt-2" id="hk-time">--</div>
+            </div>
+
+            <!-- SK 海力士 -->
+            <div class="card p-5">
+                <div class="flex justify-between items-start mb-2">
+                    <h2 class="font-semibold text-slate-600">SK 海力士 (000660.KS)</h2>
+                    <span class="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded">KRX</span>
+                </div>
+                <div class="text-3xl font-bold" id="sk-price">--</div>
+                <div class="text-sm mt-1" id="sk-change">--</div>
+                <div class="text-xs text-slate-400 mt-2" id="sk-time">--</div>
+            </div>
+        </div>
+
+        <!-- 核心溢价 -->
+        <div class="card p-6 mb-6 text-center">
+            <h2 class="text-slate-600 font-semibold mb-3">实时估算溢价</h2>
+            <div class="text-5xl font-extrabold mb-2" id="premium">--</div>
+            <div class="text-sm text-slate-500" id="premium-desc">--</div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <!-- 估算 NAV -->
+            <div class="card p-5">
+                <h2 class="font-semibold text-slate-600 mb-3">估算每单位 NAV</h2>
+                <div class="flex justify-between py-2 border-b border-slate-100">
+                    <span class="text-slate-500">HKD</span>
+                    <span class="font-semibold" id="est-nav-hkd">--</span>
+                </div>
+                <div class="flex justify-between py-2">
+                    <span class="text-slate-500">USD</span>
+                    <span class="font-semibold" id="est-nav-usd">--</span>
+                </div>
+                <div class="text-xs text-slate-400 mt-2">基于 SK 海力士实时价格 × 2x 杠杆估算</div>
+            </div>
+
+            <!-- 官方 NAV -->
+            <div class="card p-5">
+                <h2 class="font-semibold text-slate-600 mb-3">官方最新 NAV</h2>
+                <div class="flex justify-between py-2 border-b border-slate-100">
+                    <span class="text-slate-500">HKD</span>
+                    <span class="font-semibold" id="nav-hkd">--</span>
+                </div>
+                <div class="flex justify-between py-2">
+                    <span class="text-slate-500">USD</span>
+                    <span class="font-semibold" id="nav-usd">--</span>
+                </div>
+                <div class="text-xs text-slate-400 mt-2" id="nav-date">--</div>
+            </div>
+        </div>
+
+        <!-- 昨日收盘溢价 -->
+        <div class="card p-5 mb-6">
+            <div class="flex justify-between items-center">
+                <span class="text-slate-600 font-semibold">昨日收盘溢价（基于官方 NAV）</span>
+                <span class="font-bold" id="last-close-premium">--</span>
+            </div>
+        </div>
+
+        <div class="text-xs text-slate-400 text-center space-y-1">
+            <p>数据来源：Yahoo Finance、南方东英官网；自动刷新间隔 10 秒</p>
+            <p>本页面仅供示意与参考，不构成投资建议。</p>
+            <p><a href="https://www.csopasset.com/tc/products/hk-skhy-2l" target="_blank" class="text-blue-500 hover:underline">前往南方东英产品页面 ↗</a></p>
+        </div>
+    </div>
+
+    <script>
+        const fmt = (n, d = 2) => Number(n).toLocaleString("zh-HK", { minimumFractionDigits: d, maximumFractionDigits: d });
+        const colorClass = (v) => v > 0 ? "up" : (v < 0 ? "down" : "");
+        const sign = (v) => v > 0 ? "+" : "";
+
+        async function load() {
+            const statusEl = document.getElementById("status");
+            try {
+                const res = await fetch("/api/data");
+                const d = await res.json();
+                if (!d.ok) throw new Error(d.error || "数据错误");
+
+                statusEl.textContent = `最后更新：${d.lastUpdated}`;
+                statusEl.className = "text-center text-sm text-slate-400 mb-4";
+
+                // 7709.HK
+                document.getElementById("hk-price").textContent = `${fmt(d.hk7709.price)} HKD`;
+                const hkChg = document.getElementById("hk-change");
+                hkChg.textContent = `${sign(d.hk7709.changePct)}${fmt(d.hk7709.changePct)}% （较前收 ${fmt(d.hk7709.prevClose)}）`;
+                hkChg.className = `text-sm mt-1 ${colorClass(d.hk7709.changePct)}`;
+                document.getElementById("hk-time").textContent = `行情时间：${d.hk7709.marketTimeStr}`;
+
+                // SK 海力士
+                document.getElementById("sk-price").textContent = `${fmt(d.skHynix.price, 0)} KRW`;
+                const skChg = document.getElementById("sk-change");
+                skChg.textContent = `${sign(d.skHynix.changePct)}${fmt(d.skHynix.changePct)}% （较前收 ${fmt(d.skHynix.prevClose, 0)}）`;
+                skChg.className = `text-sm mt-1 ${colorClass(d.skHynix.changePct)}`;
+                document.getElementById("sk-time").textContent = `行情时间：${d.skHynix.marketTimeStr}`;
+
+                // 溢价
+                const premEl = document.getElementById("premium");
+                premEl.textContent = `${sign(d.premiumPct)}${fmt(d.premiumPct)}%`;
+                premEl.className = `text-5xl font-extrabold mb-2 ${colorClass(d.premiumPct)}`;
+                document.getElementById("premium-desc").textContent =
+                    d.premiumPct > 0 ? "7709.HK 相对估算 NAV 溢价" : "7709.HK 相对估算 NAV 折价";
+
+                // NAV
+                document.getElementById("est-nav-hkd").textContent = fmt(d.estimatedNav.hkd, 4);
+                document.getElementById("est-nav-usd").textContent = fmt(d.estimatedNav.usd, 4);
+                document.getElementById("nav-hkd").textContent = fmt(d.nav.hkdNav, 4);
+                document.getElementById("nav-usd").textContent = fmt(d.nav.usdNav, 4);
+                document.getElementById("nav-date").textContent = `官方净值日期：${d.nav.dateTc || d.nav.date}`;
+
+                // 昨日收盘溢价
+                const lcpEl = document.getElementById("last-close-premium");
+                if (d.lastClosePremiumPct !== null) {
+                    lcpEl.textContent = `${sign(d.lastClosePremiumPct)}${fmt(d.lastClosePremiumPct)}%`;
+                    lcpEl.className = `font-bold ${colorClass(d.lastClosePremiumPct)}`;
+                } else {
+                    lcpEl.textContent = "--";
+                }
+            } catch (e) {
+                statusEl.textContent = "更新失败：" + e.message;
+                statusEl.className = "text-center text-sm text-red-500 mb-4";
+                console.error(e);
+            }
+        }
+
+        load();
+        setInterval(load, 10000);
+    </script>
+</body>
+</html>
