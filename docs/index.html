@@ -105,7 +105,7 @@
         async function load() {
             const statusEl = document.getElementById("status");
             try {
-                const res = await fetch("data.json");
+                const res = await fetch(`data.json?v=${Date.now()}`);
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const d = await res.json();
 
