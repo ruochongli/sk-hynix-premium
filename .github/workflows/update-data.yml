@@ -1,0 +1,45 @@
+name: Update market data
+
+on:
+  schedule:
+    # 每 5 分钟刷新一次（GitHub Actions 最小间隔）
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+  push:
+    paths-ignore:
+      - 'docs/data.json'
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests Flask
+
+      - name: Fetch data
+        run: |
+          python - <<'PY'
+          import json
+          from app import build_data
+          data = build_data()
+          with open('docs/data.json', 'w', encoding='utf-8') as f:
+              json.dump(data, f, ensure_ascii=False, indent=2)
+          print('Data updated at', data.get('lastUpdated'))
+          PY
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add docs/data.json
+          git diff --cached --quiet || (git commit -m "chore: update market data [skip ci]" && git push)
