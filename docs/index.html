@@ -64,7 +64,11 @@
                     <span class="text-slate-500">USD</span>
                     <span class="font-semibold" id="est-nav-usd">--</span>
                 </div>
-                <div class="text-xs text-slate-400 mt-2">基于 SK 海力士实时价格 × 2x 杠杆估算</div>
+                <div class="flex justify-between py-2 border-t border-slate-100">
+                    <span class="text-slate-500">USD/HKD</span>
+                    <span class="font-semibold" id="est-nav-fx">--</span>
+                </div>
+                <div class="text-xs text-slate-400 mt-2">基于 SK 海力士最新价 × 2x 杠杆 × 实时 USD/HKD 估算，与官網 iNAV 口径一致</div>
             </div>
 
             <!-- 官方 NAV -->
@@ -91,7 +95,7 @@
         </div>
 
         <div class="text-xs text-slate-400 text-center space-y-1">
-            <p>数据来源：Yahoo Finance、南方东英官网；页面每 10 秒刷新，后台每 5 分钟更新</p>
+            <p>数据来源：Yahoo Finance（7709.HK）、Naver Finance（SK 海力士）、南方东英官网；页面每 10 秒刷新，后台每 5 分钟更新</p>
             <p>本页面仅供示意与参考，不构成投资建议。</p>
             <p><a href="https://www.csopasset.com/tc/products/hk-skhy-2l" target="_blank" class="text-blue-500 hover:underline">前往南方东英产品页面 ↗</a></p>
         </div>
@@ -124,6 +128,9 @@
                 skChg.textContent = `${sign(d.skHynix.changePct)}${fmt(d.skHynix.changePct)}% （较前收 ${fmt(d.skHynix.prevClose, 0)}）`;
                 skChg.className = `text-sm mt-1 ${colorClass(d.skHynix.changePct)}`;
                 document.getElementById("sk-time").textContent = `行情时间：${d.skHynix.marketTimeStr}`;
+                if (d.skHynix.afterHours) {
+                    document.getElementById("sk-time").textContent += "（盘后）";
+                }
 
                 const premEl = document.getElementById("premium");
                 premEl.textContent = `${sign(d.premiumPct)}${fmt(d.premiumPct)}%`;
@@ -133,6 +140,9 @@
 
                 document.getElementById("est-nav-hkd").textContent = fmt(d.estimatedNav.hkd, 4);
                 document.getElementById("est-nav-usd").textContent = fmt(d.estimatedNav.usd, 4);
+                if (d.fx) {
+                    document.getElementById("est-nav-fx").textContent = fmt(d.fx, 4);
+                }
                 document.getElementById("nav-hkd").textContent = fmt(d.nav.hkdNav, 4);
                 document.getElementById("nav-usd").textContent = fmt(d.nav.usdNav, 4);
                 document.getElementById("nav-date").textContent = `官方净值日期：${d.nav.date}`;
