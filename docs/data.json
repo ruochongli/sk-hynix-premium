@@ -1,11 +1,11 @@
 {
   "hk7709": {
     "symbol": "7709.HK",
-    "price": 117.85,
+    "price": 116.1,
     "prevClose": 109.6,
-    "changePct": 7.53,
-    "marketTime": 1783060575,
-    "marketTimeStr": "2026-07-03 14:36:15",
+    "changePct": 5.93,
+    "marketTime": 1783061305,
+    "marketTimeStr": "2026-07-03 14:48:25",
     "currency": "HKD"
   },
   "skHynix": {
@@ -28,7 +28,7 @@
     "hkd": 113.992,
     "usd": 14.5319
   },
-  "premiumPct": 3.38,
+  "premiumPct": 1.85,
   "lastClosePremiumPct": 17.07,
-  "lastUpdated": "2026-07-03 14:51:19"
+  "lastUpdated": "2026-07-03 15:03:27"
 }
