@@ -2,7 +2,7 @@ name: Update market data
 
 on:
   schedule:
-    # 每 5 分钟刷新一次（GitHub Actions 最小间隔）
+    # 每 5 分钟刷新一次（GitHub Actions 最小间隔） UTC
     - cron: '*/5 * * * *'
   workflow_dispatch:
   push:
