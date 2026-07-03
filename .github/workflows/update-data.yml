@@ -9,6 +9,10 @@ on:
     paths-ignore:
       - 'docs/data.json'
 
+concurrency:
+  group: update-data
+  cancel-in-progress: false
+
 jobs:
   update:
     runs-on: ubuntu-latest
