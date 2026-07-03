@@ -43,33 +43,29 @@ def hk_time(ts=None):
 
 
 def fetch_yahoo(symbol):
-    """从 Yahoo Finance v8 chart API 获取最新价格和上一交易日收盘价"""
+    """从 Yahoo Finance v8 chart API 获取最新价格和上一交易日收盘价
+
+    使用 1 分钟线、当日范围，这样 meta 里的 regularMarketTime 会跟上
+    日内最新行情，而不是被日线数据“截断”到较早时刻。
+    """
     url = (
         "https://query1.finance.yahoo.com/v8/finance/chart/"
-        f"{symbol}?interval=1d&range=10d&includePrePost=false"
+        f"{symbol}?interval=1m&range=1d&includePrePost=false"
     )
     headers = {"User-Agent": USER_AGENT}
     resp = requests.get(url, headers=headers, timeout=15)
     resp.raise_for_status()
     data = resp.json()
 
-    result = data["chart"]["result"][0]
-    meta = result["meta"]
+    meta = data["chart"]["result"][0]["meta"]
 
     price = meta.get("regularMarketPrice")
     market_time = meta.get("regularMarketTime")
     currency = meta.get("currency", "")
+    # chartPreviousClose 是上一交易日收盘价
+    prev_close = meta.get("chartPreviousClose") or meta.get("previousClose")
 
-    # 取日线序列的倒数第二根收盘价作为“上一交易日收盘价”，
-    # 与南方东英 T-1 NAV 口径保持一致。
-    timestamps = result.get("timestamp", [])
-    closes = result["indicators"]["quote"][0].get("close", [])
-    if len(closes) >= 2 and all(c is not None for c in closes[-2:]):
-        prev_close = closes[-2]
-    else:
-        prev_close = meta.get("chartPreviousClose")
-
-    if price is None or prev_close is None:
+    if price is None or prev_close is None or market_time is None:
         raise ValueError(f"Yahoo 返回数据不完整: {symbol}")
 
     change_pct = (price - prev_close) / prev_close * 100
