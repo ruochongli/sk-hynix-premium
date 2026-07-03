@@ -42,18 +42,19 @@ def trigger(token):
     }
     r = requests.post(url, json={"ref": "main"}, headers=headers, timeout=30)
     if r.status_code == 204:
-        print(f"[{time.strftime('%H:%M:%S')}] 已触发 workflow_dispatch")
+        print(f"[{time.strftime('%H:%M:%S')}] 已触发 workflow_dispatch", flush=True)
         return True
     else:
-        print(f"[{time.strftime('%H:%M:%S')}] 触发失败: {r.status_code} {r.text[:200]}")
+        print(f"[{time.strftime('%H:%M:%S')}] 触发失败: {r.status_code} {r.text[:200]}", flush=True)
         return False
 
 
 def main():
     token = get_token()
-    print("启动本地触发器，每 5 分钟触发一次 GitHub Actions...")
+    print("启动本地触发器，每 5 分钟触发一次 GitHub Actions...", flush=True)
     # 启动时立即触发一次
     trigger(token)
+    print(f"[{time.strftime('%H:%M:%S')}] 等待 {INTERVAL} 秒后再次触发...", flush=True)
     while True:
         time.sleep(INTERVAL)
         trigger(token)
