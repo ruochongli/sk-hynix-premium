@@ -1,11 +1,11 @@
 {
   "hk7709": {
     "symbol": "7709.HK",
-    "price": 115.7,
+    "price": 115.6,
     "prevClose": 109.6,
-    "changePct": 5.57,
-    "marketTime": 1783062347,
-    "marketTimeStr": "2026-07-03 15:05:47",
+    "changePct": 5.47,
+    "marketTime": 1783062376,
+    "marketTimeStr": "2026-07-03 15:06:16",
     "currency": "HKD"
   },
   "skHynix": {
@@ -13,8 +13,8 @@
     "price": 2409000,
     "prevClose": 2187000,
     "changePct": 10.15,
-    "marketTime": 1783063251,
-    "marketTimeStr": "2026-07-03 15:20:51",
+    "marketTime": 1783063279,
+    "marketTimeStr": "2026-07-03 15:21:19",
     "currency": "KRW",
     "source": "Naver Finance",
     "marketState": "CLOSE",
@@ -28,11 +28,11 @@
     "dateTc": "2026年07月02日"
   },
   "estimatedNav": {
-    "hkd": 112.6014,
+    "hkd": 112.6028,
     "usd": 14.3573
   },
-  "fx": 7.8428,
-  "premiumPct": 2.75,
+  "fx": 7.8429,
+  "premiumPct": 2.66,
   "lastClosePremiumPct": 17.07,
-  "lastUpdated": "2026-07-03 15:20:53"
+  "lastUpdated": "2026-07-03 15:21:20"
 }
