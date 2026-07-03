@@ -106,8 +106,8 @@
             const statusEl = document.getElementById("status");
             try {
                 const res = await fetch("data.json");
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const d = await res.json();
-                if (!d.ok) throw new Error(d.error || "数据错误");
 
                 statusEl.textContent = `数据时间：${d.lastUpdated}（每 5 分钟更新）`;
                 statusEl.className = "text-center text-sm text-slate-400 mb-4";
@@ -134,7 +134,7 @@
                 document.getElementById("est-nav-usd").textContent = fmt(d.estimatedNav.usd, 4);
                 document.getElementById("nav-hkd").textContent = fmt(d.nav.hkdNav, 4);
                 document.getElementById("nav-usd").textContent = fmt(d.nav.usdNav, 4);
-                document.getElementById("nav-date").textContent = `官方净值日期：${d.nav.dateTc || d.nav.date}`;
+                document.getElementById("nav-date").textContent = `官方净值日期：${d.nav.date}`;
 
                 const lcpEl = document.getElementById("last-close-premium");
                 if (d.lastClosePremiumPct !== null) {
