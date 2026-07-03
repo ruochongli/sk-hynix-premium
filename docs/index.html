@@ -105,7 +105,8 @@
         async function load() {
             const statusEl = document.getElementById("status");
             try {
-                const res = await fetch(`data.json?v=${Date.now()}`);
+                const DATA_URL = "https://raw.githubusercontent.com/ruochongli/sk-hynix-premium/main/docs/data.json";
+                const res = await fetch(`${DATA_URL}?_=${Date.now()}`);
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const d = await res.json();
 
