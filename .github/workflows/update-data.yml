@@ -24,7 +24,9 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install requests Flask
+        run: |
+          pip install -r requirements.txt
+          playwright install --with-deps chromium
 
       - name: Fetch data
         run: |
@@ -35,6 +37,7 @@ jobs:
           with open('docs/data.json', 'w', encoding='utf-8') as f:
               json.dump(data, f, ensure_ascii=False, indent=2)
           print('Data updated at', data.get('lastUpdated'))
+          print('Official iNAV:', data.get('inav'))
           PY
 
       - name: Commit and push

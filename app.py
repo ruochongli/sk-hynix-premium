@@ -175,11 +175,72 @@ def fetch_csop_nav():
     }
 
 
+def fetch_csop_inav():
+    """用无头浏览器抓取南方东英官网的即日估算 NAV（ICE Data 提供）
+
+    官网把 iNAV 放在一个 inav.ice.com 的 iframe 里，直接请求拿不到，
+    必须打开完整页面并等 iframe 渲染后才能读取。
+    """
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        raise RuntimeError("未安装 playwright，无法抓取官网 iNAV")
+
+    import re
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page(user_agent=USER_AGENT)
+        page.goto(
+            "https://www.csopasset.com/tc/products/hk-skhy-2l",
+            wait_until="networkidle",
+            timeout=60000,
+        )
+        page.wait_for_timeout(6000)
+
+        text = ""
+        for f in page.frames:
+            if "inav.ice.com" in f.url:
+                text = f.locator("body").inner_text(timeout=10000)
+                break
+        browser.close()
+
+    if not text:
+        raise ValueError("未找到官网 iNAV iframe")
+
+    numbers = re.findall(r"\d+\.\d+", text)
+    times = re.findall(r"\d{2}:\d{2} (?:AM|PM)", text)
+    dates = re.findall(r"(\d{4})\D+(\d{1,2})\D+(\d{1,2})", text)
+
+    if len(numbers) < 2 or len(times) < 2 or len(dates) < 2:
+        raise ValueError(f"官网 iNAV 页面解析失败: numbers={numbers}, times={times}, dates={dates}")
+
+    def to_hkt(date_match, time_str):
+        y, m, d = map(int, date_match)
+        t = datetime.strptime(time_str, "%I:%M %p")
+        dt = datetime(y, m, d, t.hour, t.minute, tzinfo=timezone(timedelta(hours=8)))
+        return dt.strftime("%Y-%m-%d %H:%M:%S")
+
+    return {
+        "hkd": float(numbers[0]),
+        "time": to_hkt(dates[0], times[0]),
+        "marketPrice": float(numbers[1]),
+        "marketPriceTime": to_hkt(dates[1], times[1]),
+    }
+
+
 def build_data():
     """汇总所有数据源并计算溢价"""
     hk_7709 = fetch_yahoo("7709.HK")
     sk_hynix = fetch_sk_hynix_naver()
     nav = fetch_csop_nav()
+
+    # 优先抓取官网 iframe 里的即日估算 NAV（最贴近 CSOP 官方显示值）
+    try:
+        inav = fetch_csop_inav()
+    except Exception as e:
+        inav = None
+        print(f"抓取官网 iNAV 失败，回退到估算: {e}")
 
     # 实时 USD/HKD 汇率
     try:
@@ -195,8 +256,11 @@ def build_data():
     estimated_usd_nav = nav["usdNav"] * (1 + 2 * sk_return)
     estimated_hkd_nav = estimated_usd_nav * usd_hkd if usd_hkd else nav["hkdNav"] * (1 + 2 * sk_return)
 
-    # 实时溢价（用估算 NAV）
-    premium_pct = (hk_7709["price"] - estimated_hkd_nav) / estimated_hkd_nav * 100
+    # 实时溢价：优先用官网 iNAV，否则用估算 NAV
+    if inav:
+        premium_pct = (hk_7709["price"] - inav["hkd"]) / inav["hkd"] * 100
+    else:
+        premium_pct = (hk_7709["price"] - estimated_hkd_nav) / estimated_hkd_nav * 100
 
     # 以官方 NAV 计算的昨日收盘溢价
     last_close_premium_pct = None
@@ -213,6 +277,7 @@ def build_data():
             "date": nav["date"],
             "dateTc": nav["dateTc"],
         },
+        "inav": inav,
         "estimatedNav": {
             "hkd": round(estimated_hkd_nav, 4),
             "usd": round(estimated_usd_nav, 4),

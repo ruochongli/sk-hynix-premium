@@ -47,42 +47,67 @@
 
         <!-- 核心溢价 -->
         <div class="card p-6 mb-6 text-center">
-            <h2 class="text-slate-600 font-semibold mb-3">实时估算溢价</h2>
+            <h2 class="text-slate-600 font-semibold mb-3">实时溢价（基于官网即日估算 NAV）</h2>
             <div class="text-5xl font-extrabold mb-2" id="premium">--</div>
             <div class="text-sm text-slate-500" id="premium-desc">--</div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <!-- 估算 NAV -->
+            <!-- 官网即日估算 NAV -->
             <div class="card p-5">
-                <h2 class="font-semibold text-slate-600 mb-3">估算每单位 NAV</h2>
+                <h2 class="font-semibold text-slate-600 mb-3">官网即日估算每单位 NAV</h2>
+                <div class="flex justify-between py-2 border-b border-slate-100">
+                    <span class="text-slate-500">HKD</span>
+                    <span class="font-semibold" id="inav-hkd">--</span>
+                </div>
+                <div class="flex justify-between py-2 border-b border-slate-100">
+                    <span class="text-slate-500">更新时间</span>
+                    <span class="font-semibold" id="inav-time">--</span>
+                </div>
+                <div class="flex justify-between py-2 border-b border-slate-100">
+                    <span class="text-slate-500">官网即日市价</span>
+                    <span class="font-semibold" id="inav-market-price">--</span>
+                </div>
+                <div class="flex justify-between py-2">
+                    <span class="text-slate-500">市价时间</span>
+                    <span class="font-semibold" id="inav-market-time">--</span>
+                </div>
+                <div class="text-xs text-slate-400 mt-2">数据来源：南方东英官网 ICE Data iNAV</div>
+            </div>
+
+            <!-- 独立估算 NAV -->
+            <div class="card p-5">
+                <h2 class="font-semibold text-slate-600 mb-3">独立估算每单位 NAV（参考）</h2>
                 <div class="flex justify-between py-2 border-b border-slate-100">
                     <span class="text-slate-500">HKD</span>
                     <span class="font-semibold" id="est-nav-hkd">--</span>
                 </div>
-                <div class="flex justify-between py-2">
+                <div class="flex justify-between py-2 border-b border-slate-100">
                     <span class="text-slate-500">USD</span>
                     <span class="font-semibold" id="est-nav-usd">--</span>
                 </div>
-                <div class="flex justify-between py-2 border-t border-slate-100">
+                <div class="flex justify-between py-2">
                     <span class="text-slate-500">USD/HKD</span>
                     <span class="font-semibold" id="est-nav-fx">--</span>
                 </div>
-                <div class="text-xs text-slate-400 mt-2">基于 SK 海力士最新价 × 2x 杠杆 × 实时 USD/HKD 估算，与官網 iNAV 口径一致</div>
+                <div class="text-xs text-slate-400 mt-2">基于 SK 海力士最新价 × 2x 杠杆 × 实时 USD/HKD 估算</div>
             </div>
+        </div>
 
-            <!-- 官方 NAV -->
-            <div class="card p-5">
-                <h2 class="font-semibold text-slate-600 mb-3">官方最新 NAV</h2>
-                <div class="flex justify-between py-2 border-b border-slate-100">
-                    <span class="text-slate-500">HKD</span>
-                    <span class="font-semibold" id="nav-hkd">--</span>
-                </div>
-                <div class="flex justify-between py-2">
-                    <span class="text-slate-500">USD</span>
-                    <span class="font-semibold" id="nav-usd">--</span>
-                </div>
-                <div class="text-xs text-slate-400 mt-2" id="nav-date">--</div>
+        <!-- 官方昨日 NAV -->
+        <div class="card p-5 mb-6">
+            <div class="flex justify-between items-center">
+                <span class="text-slate-600 font-semibold">官方最新 NAV（T-1）</span>
+                <span class="text-sm text-slate-500" id="nav-hkd">--</span>
+            </div>
+            <div class="text-xs text-slate-400 mt-1" id="nav-date">--</div>
+        </div>
+
+        <!-- 昨日收盘溢价 -->
+        <div class="card p-5 mb-6">
+            <div class="flex justify-between items-center">
+                <span class="text-slate-600 font-semibold">昨日收盘溢价（基于官方 NAV）</span>
+                <span class="font-bold" id="last-close-premium">--</span>
             </div>
         </div>
 
@@ -136,15 +161,21 @@
                 premEl.textContent = `${sign(d.premiumPct)}${fmt(d.premiumPct)}%`;
                 premEl.className = `text-5xl font-extrabold mb-2 ${colorClass(d.premiumPct)}`;
                 document.getElementById("premium-desc").textContent =
-                    d.premiumPct > 0 ? "7709.HK 相对估算 NAV 溢价" : "7709.HK 相对估算 NAV 折价";
+                    d.premiumPct > 0 ? "7709.HK 相对官网即日估算 NAV 溢价" : "7709.HK 相对官网即日估算 NAV 折价";
+
+                if (d.inav) {
+                    document.getElementById("inav-hkd").textContent = fmt(d.inav.hkd, 4);
+                    document.getElementById("inav-time").textContent = d.inav.time;
+                    document.getElementById("inav-market-price").textContent = `${fmt(d.inav.marketPrice, 4)} HKD`;
+                    document.getElementById("inav-market-time").textContent = d.inav.marketPriceTime;
+                }
 
                 document.getElementById("est-nav-hkd").textContent = fmt(d.estimatedNav.hkd, 4);
                 document.getElementById("est-nav-usd").textContent = fmt(d.estimatedNav.usd, 4);
                 if (d.fx) {
                     document.getElementById("est-nav-fx").textContent = fmt(d.fx, 4);
                 }
-                document.getElementById("nav-hkd").textContent = fmt(d.nav.hkdNav, 4);
-                document.getElementById("nav-usd").textContent = fmt(d.nav.usdNav, 4);
+                document.getElementById("nav-hkd").textContent = `${fmt(d.nav.hkdNav, 4)} HKD / ${fmt(d.nav.usdNav, 4)} USD`;
                 document.getElementById("nav-date").textContent = `官方净值日期：${d.nav.date}`;
 
                 const lcpEl = document.getElementById("last-close-premium");
