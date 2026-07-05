@@ -11,10 +11,10 @@
   "skHynix": {
     "symbol": "000660.KS",
     "price": 2425000,
-    "prevClose": 2187000,
+    "prevClose": 2425000,
     "changePct": 10.88,
-    "marketTime": 1783281419,
-    "marketTimeStr": "2026-07-06 03:56:59",
+    "marketTime": 1783284978,
+    "marketTimeStr": "2026-07-06 04:56:18",
     "currency": "KRW",
     "source": "Naver Finance",
     "marketState": "CLOSE",
@@ -34,11 +34,11 @@
     "marketPriceTime": "2026-07-03 16:08:00"
   },
   "estimatedNav": {
-    "hkd": 139.2065,
-    "usd": 17.75
+    "hkd": 114.3239,
+    "usd": 14.5773
   },
   "fx": 7.8426,
   "premiumPct": 3.66,
   "lastClosePremiumPct": 2.16,
-  "lastUpdated": "2026-07-06 03:57:10"
+  "lastUpdated": "2026-07-06 04:56:29"
 }
