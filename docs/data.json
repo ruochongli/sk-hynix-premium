@@ -13,8 +13,8 @@
     "price": 2425000,
     "prevClose": 2187000,
     "changePct": 10.88,
-    "marketTime": 1783228448,
-    "marketTimeStr": "2026-07-05 13:14:08",
+    "marketTime": 1783239552,
+    "marketTimeStr": "2026-07-05 16:19:12",
     "currency": "KRW",
     "source": "Naver Finance",
     "marketState": "CLOSE",
@@ -40,5 +40,5 @@
   "fx": 7.843,
   "premiumPct": 3.66,
   "lastClosePremiumPct": 2.16,
-  "lastUpdated": "2026-07-05 13:14:21"
+  "lastUpdated": "2026-07-05 16:19:23"
 }
