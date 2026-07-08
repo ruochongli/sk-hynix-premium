@@ -10,15 +10,15 @@
   },
   "skHynix": {
     "symbol": "000660.KS",
-    "price": 2076000,
+    "price": 2170000,
     "prevClose": 2076000,
-    "changePct": 5.68,
-    "marketTime": 1783548816,
-    "marketTimeStr": "2026-07-09 06:13:36",
+    "changePct": 4.53,
+    "marketTime": 1783553449,
+    "marketTimeStr": "2026-07-09 07:30:49",
     "currency": "KRW",
     "source": "Naver Finance",
-    "marketState": "CLOSE",
-    "afterHours": false
+    "marketState": "PREOPEN",
+    "afterHours": true
   },
   "nav": {
     "hkdNav": 81.0411,
@@ -27,18 +27,13 @@
     "date": "2026-07-08",
     "dateTc": "2026年07月08日"
   },
-  "inav": {
-    "hkd": 78.2941,
-    "time": "2026-07-08 16:29:00",
-    "marketPrice": 82.74,
-    "marketPriceTime": "2026-07-08 16:08:00"
-  },
+  "inav": null,
   "estimatedNav": {
-    "hkd": 81.0416,
-    "usd": 10.338
+    "hkd": 88.3717,
+    "usd": 11.2742
   },
-  "fx": 7.8392,
-  "premiumPct": 5.68,
+  "fx": 7.8384,
+  "premiumPct": -6.37,
   "lastClosePremiumPct": 2.1,
-  "lastUpdated": "2026-07-09 06:13:47"
+  "lastUpdated": "2026-07-09 07:31:01"
 }
