@@ -13,8 +13,8 @@
     "price": 1322000,
     "prevClose": 1401000,
     "changePct": 5.64,
-    "marketTime": 1785430176,
-    "marketTimeStr": "2026-07-31 00:49:36",
+    "marketTime": 1785434730,
+    "marketTimeStr": "2026-07-31 02:05:30",
     "currency": "KRW",
     "source": "Naver Finance",
     "marketState": "CLOSE",
@@ -34,11 +34,11 @@
     "marketPriceTime": "2026-07-30 16:08:00"
   },
   "estimatedNav": {
-    "hkd": 24.1732,
+    "hkd": 24.171,
     "usd": 3.0822
   },
-  "fx": 7.8428,
+  "fx": 7.8421,
   "premiumPct": -2.61,
   "lastClosePremiumPct": -6.93,
-  "lastUpdated": "2026-07-31 00:49:47"
+  "lastUpdated": "2026-07-31 02:05:42"
 }
